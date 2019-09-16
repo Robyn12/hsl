@@ -1,0 +1,80 @@
+﻿#headsign {
+    color: blue;
+    display:inline;
+}
+#Otsikko {
+    border-radius: 10px;
+    position: absolute;
+    left: 10%;
+    border: 10px solid gray;
+    width: 80%;
+    height: 15%;
+    background-color: cyan;
+    text-align: center;
+}
+
+#bussiAikataulu {
+    position: absolute;
+    top: 30%;
+    height: 70%;
+    width: 90%;
+}
+
+body {
+    background-color: pink;
+}
+#Kyllikinportti1 {
+    border-radius: 10px;
+    padding: 10px;
+    border: 5px solid gray;
+    position: absolute;
+    width: 40%;
+    height: 80%;
+    left: 10%;
+}
+
+#Kyllikinportti2 {
+    border-radius: 10px;
+    padding: 10px;
+    border: 5px solid gray;
+    position: absolute;
+    width: 40%;
+    height: 80%;
+    left: 60%;
+}
+#bussiNro {
+    display:inline;
+    font-weight:900;
+}
+.trippi {
+    float:left;
+    position: relative;
+    border: 1px solid black;
+    width: 80%;
+    left:10%;
+}
+.suunta {
+    position: relative;
+    width: 80%;
+    left: 10%;
+}
+.arrival {
+    display:inline;
+    left: 80%;
+    margin-right: auto;
+}
+.trippiLeft {
+
+    position: relative;
+    left:5%;
+    width:60%;
+    float:left;
+}
+.trippiRight {
+
+    position: relative;
+    width: 30%;
+    float:left;
+    left:25%;
+    
+}
