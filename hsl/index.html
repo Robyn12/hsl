@@ -5,102 +5,93 @@
 	<link rel="stylesheet" href="hsl.css">
 </head>
 <script>
+var counter = 1;
 var url1 = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql";
 var header = "Content-Type: application/json";
-var queryKyllikinportti1 = { "query": "{  stops(ids: \"HSL:1171407\")  { stoptimesWithoutPatterns (numberOfDepartures: 4) { trip { route { shortName }  } realtimeArrival headsign } } }" };
-var queryKyllikinportti2 = { "query": "{  stops(ids: \"HSL:1171408\")  { stoptimesWithoutPatterns (numberOfDepartures: 4) { trip { route { shortName }  } realtimeArrival headsign } } }" };
-function haeTiedot() {
-  var now = new Date();
+var query = { "query": "{  stops(ids: [\"HSL:1171407\", \"HSL:1171408\"])  { stoptimesWithoutPatterns (numberOfDepartures: 4) { trip { route { shortName }  } scheduledDeparture realtimeDeparture headsign } } }" };
+function paivitaKello() {
+    var now = new Date();
+    var kminuutit = now.getMinutes() < 1 ? "00" : now.getMinutes()<10 && now.getMinutes() > 0 ? "0" + now.getMinutes() : now.getMinutes();
+    var ktunnit = now.getHours() < 1 ? "00" : now.getHours()<10 && now.getHours() > 0 ? "0" + now.getHours() : now.getHours();
+    var ksekunnit = now.getSeconds() < 1 ? "00" : now.getSeconds()<10 && now.getSeconds() > 0 ? "0" + now.getSeconds() : now.getSeconds();
+    document.getElementById('Kello').innerHTML = ktunnit + ":" + kminuutit + ":" + ksekunnit;
+};
+function muotoileTiedot(trips) {
+    var now = new Date();
     var minutes = (now.getHours() * 60 ) + now.getMinutes();
+    var tuloste = "";
+    var tmLength = trips.length;
+    for (var i = 0; i < tmLength; i++) {
+        var bussiNro = JSON.stringify(trips[i]["trip"]["route"]["shortName"]);
+        bussiNro = bussiNro.substring(1, bussiNro.length - 1);
+        var headsign = JSON.stringify(trips[i]["headsign"]);
+        headsign = headsign.substring(1, headsign.length - 1);
+        var realtimeDeparture = trips[i]["realtimeDeparture"];
+        var scheduledDeparture = trips[i]["scheduledDeparture"];
+
+        realtimeDeparture /= 60;
+        realtimeDeparture -= minutes;
+        realtimeDeparture = Math.floor(realtimeDeparture);
+        var formattedDeparture = "";
+        if (realtimeDeparture > 20) {
+            var tunnit = Math.floor(scheduledDeparture / 3600);
+            var minuutit = scheduledDeparture % 3600 / 60;
+	        tunnit = tunnit > 24 ? tunnit - 24 : tunnit;
+    	    var sminuutit = minuutit < 1 ? "00" : minuutit<10 && minuutit > 0 ? "0" + minuutit : minuutit;
+            var stunnit = tunnit < 1 ? "00" : tunnit<10 && tunnit > 0 ? "0" + tunnit : tunnit;
+	        formattedDeparture = stunnit + ":" + sminuutit;
+        } else {
+            formattedDeparture = realtimeDeparture + "min";
+        }
+        tuloste +=  "<div class='trippi'><div class='trippiLeft'><h3 id='bussiNro'>&nbsp;"+ bussiNro +"&nbsp;&nbsp;&nbsp;&nbsp;</h3><h3 id='headsign'>" +headsign + "</h3></div><div class='trippiRight'><h3 class='arrival'>&nbsp;"  + formattedDeparture + "</h3></div></div>";
+    }
+
+    return tuloste;
+};
+function haeTiedot() {
+
   $.ajax({
     type: "POST",
     url: url1,
-    data: JSON.stringify(queryKyllikinportti1),
+    data: JSON.stringify(query),
     contentType: "application/json",
     traditional: true,
-    success: function (data) {
-      var tripsMyllypuro = data["data"]["stops"][0]["stoptimesWithoutPatterns"];
-      var tmLength = tripsMyllypuro.length;
-      var tuloste = "";
-      for (var i = 0; i < tmLength; i++) {
-        var bussiNro = JSON.stringify(tripsMyllypuro[i]["trip"]["route"]["shortName"]);
-        bussiNro = bussiNro.substring(1, bussiNro.length-1);
-        var headsign = JSON.stringify(tripsMyllypuro[i]["headsign"]);
-        headsign = headsign.substring(1, headsign.length-1);
-        var realtimeArrival = JSON.stringify(tripsMyllypuro[i]["realtimeArrival"]);
-        realtimeArrival /= 60;
-        realtimeArrival -= minutes;
-        realtimeArrival = Math.floor(realtimeArrival);
-        var tunnit = 0;
-        var formattedArrival = "";
-        if (realtimeArrival > 60) {
-          tunnit = Math.floor(realtimeArrival/60);
-          var minuutit = realtimeArrival % 60;
-          formattedArrival = tunnit + "h " + minuutit + "min";
-        } else {
-          formattedArrival = realtimeArrival + "min";
-        }
-        tuloste +=  "<div class='trippi'><div class='trippiLeft'><h3 id='bussiNro'>&nbsp;"+ bussiNro +"&nbsp;&nbsp;&nbsp;&nbsp;</h3><h3 id='headsign'>" +headsign + "</h3></div><div class='trippiRight'><h3 class='arrival'>&nbsp;" + formattedArrival + "</h3></div></div>";
-      }
-    document.getElementById("Kyllikinportti1").innerHTML = "<div class='suunta'><h2>Pasilan Aseman suuntaan</h2></div>" + tuloste + "</h3>";
+      success: function (data) {
+      var tuloste = muotoileTiedot(data["data"]["stops"][0]["stoptimesWithoutPatterns"]);
+      var tuloste2 = muotoileTiedot(data["data"]["stops"][1]["stoptimesWithoutPatterns"]);
+      document.getElementById("Kyllikinportti1").innerHTML = "<div class='suunta'><h2>Pasilan Aseman suuntaan</h2></div>" + tuloste + "</h3>";
+      document.getElementById("Kyllikinportti2").innerHTML = "<div class='suunta'><h2>Keskustaan päin</h2></div>" + tuloste2 + "";
+      counter = 1;
     },
     error: function (data) {
-      alert("nonono");
-    }
-  });
-  $.ajax({
-    type: "POST",
-    url: url1,
-    data: JSON.stringify(queryKyllikinportti2),
-    contentType: "application/json",
-    traditional: true,
-    success: function (data) {
-      var tripsKeskusta = data["data"]["stops"][0]["stoptimesWithoutPatterns"];
-      var tkLength = tripsKeskusta.length;
-      var tuloste2 = "";
-      for (var i = 0; i < tkLength; i++) {
-        var bussiNro = JSON.stringify(tripsKeskusta[i]["trip"]["route"]["shortName"]);
-        bussiNro = bussiNro.substring(1, bussiNro.length-1);
-          var headsign = JSON.stringify(tripsKeskusta[i]["headsign"]);
-          headsign = headsign.substring(1, headsign.length - 1);
-        var realtimeArrival = JSON.stringify(tripsKeskusta[i]["realtimeArrival"]);
-        realtimeArrival /= 60;
-        realtimeArrival = Math.floor(realtimeArrival);
-        realtimeArrival -= minutes;
-        var tunnit = 0;
-        var formattedArrival = "";
-        if (realtimeArrival > 60) {
-          tunnit = Math.floor(realtimeArrival/60);
-          var minuutit = realtimeArrival % 60;
-          formattedArrival = tunnit + "h " + minuutit + "min";
-        } else {
-
-          formattedArrival = realtimeArrival + "min";
-        }
-
-        tuloste2 += "<div class='trippi'><div class='trippiLeft'><h3 id='bussiNro'>&nbsp;"+ bussiNro +"&nbsp;&nbsp;&nbsp;&nbsp;</h3><h3 id='headsign'>" +headsign + "</h3></div><div class='trippiRight'><h3 class='arrival'>&nbsp;" + formattedArrival + "</h3></div></div>";
-      }
-      document.getElementById("Kyllikinportti2").innerHTML = "<div class='suunta'><h2>Keskustaan päin</h2></div>" + tuloste2 + "";
-    },
-      error: function (data) {
         document.getElementById("Kyllikinportti1").innerHTML = "Offline";
         document.getElementById("Kyllikinportti2").innerHTML = "";
     }
   });
 };
 haeTiedot();
-
 setInterval(function(){
-    haeTiedot()
-}, 30000)
+	if (counter % 60 == 0) { 
+		haeTiedot();
+	}
+	paivitaKello();
+	counter += 1;
+}, 1000)
 </script>
 <body>
-	<div id="Otsikko">
-		<h1>
-			Bussiaikataulu
-		</h1>
-        <div><h3>Kyllikinportin pysäkit</h3></div>
-	</div>
+    <div id="Otsikko">
+        <div id="Headerit">
+            <h1>
+                Bussiaikataulu
+            </h1>
+
+            <div><h3>Kyllikinportin pysäkit</h3></div>
+        </div>
+        <div id="kelloDiv">
+            <h2 id="Kello">kello</h2>
+        </div>
+    </div>
+
 	<div id="bussiAikataulu">
         <div id="Kyllikinportti1">
             Kyllikinportti1
