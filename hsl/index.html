@@ -9,6 +9,12 @@ var counter = 1;
 var url1 = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql";
 var header = "Content-Type: application/json";
 var query = { "query": "{  stops(ids: [\"HSL:1171407\", \"HSL:1171408\"])  { stoptimesWithoutPatterns (numberOfDepartures: 4) { trip { route { shortName }  } scheduledDeparture realtimeDeparture headsign } } }" };
+function checkInternetConnection() {
+	return navigator.onLine
+};
+function checkRefresh() {
+	return document.getElementById("Kyllikinportti1").innerHTML.value == "Offline";
+};
 function paivitaKello() {
     var now = new Date();
     var kminuutit = now.getMinutes() < 1 ? "00" : now.getMinutes()<10 && now.getMinutes() > 0 ? "0" + now.getMinutes() : now.getMinutes();
@@ -60,7 +66,7 @@ function haeTiedot() {
       var tuloste = muotoileTiedot(data["data"]["stops"][0]["stoptimesWithoutPatterns"]);
       var tuloste2 = muotoileTiedot(data["data"]["stops"][1]["stoptimesWithoutPatterns"]);
       document.getElementById("Kyllikinportti1").innerHTML = "<div class='suunta'><h2>Pasilan Aseman suuntaan</h2></div>" + tuloste + "</h3>";
-      document.getElementById("Kyllikinportti2").innerHTML = "<div class='suunta'><h2>Keskustaan p‰in</h2></div>" + tuloste2 + "";
+      document.getElementById("Kyllikinportti2").innerHTML = "<div class='suunta'><h2>Keskustaan p√§in</h2></div>" + tuloste2 + "";
       counter = 1;
     },
     error: function (data) {
@@ -71,7 +77,12 @@ function haeTiedot() {
 };
 haeTiedot();
 setInterval(function(){
-	if (counter % 60 == 0) { 
+	if (counter % 60 == 0 && checkInternetConnection()) {
+		haeTiedot();
+	} else if (!checkInternetConnection()) {
+        	document.getElementById("Kyllikinportti1").innerHTML = "Offline";
+        	document.getElementById("Kyllikinportti2").innerHTML = "";
+	} else if (checkInternetConnection && checkRefresh) {
 		haeTiedot();
 	}
 	paivitaKello();
@@ -85,7 +96,7 @@ setInterval(function(){
                 Bussiaikataulu
             </h1>
 
-            <div><h3>Kyllikinportin pys‰kit</h3></div>
+            <div><h3>Kyllikinportin pys√§kit</h3></div>
         </div>
         <div id="kelloDiv">
             <h2 id="Kello">kello</h2>
