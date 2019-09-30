@@ -1,5 +1,6 @@
 <html>
 <head>
+    <meta charset="utf-8" />
 	<title>HSL Bussiaikataulu</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<link rel="stylesheet" href="hsl.css">
@@ -8,7 +9,7 @@
 var counter = 1;
 var url1 = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql";
     var header = "Content-Type: application/json";
-    var stops = ["HSL:1171407", "HSL:1171408" ,"HSL:1171124", "HSL:1171125"]
+    var stops = ["HSL:1171408" ,"HSL:1171407", "HSL:1171124", "HSL:1171125"]
 var query = { "query": "{  stops(ids: [\""+ stops[0] +"\", \"" + stops[1] + "\", \"" + stops[2] + "\", \"" + stops[3] + "\"])  { stoptimesWithoutPatterns (numberOfDepartures: 4) { trip { route { shortName }  } scheduledDeparture realtimeDeparture headsign } } }" };
 function checkInternetConnection() {
 	return navigator.onLine
@@ -71,7 +72,7 @@ function haeTiedot() {
 
       document.getElementById("Kyllikinportti1").innerHTML = "<div class='suunta'><h2>Pasilan Aseman suuntaan</h2></div>" + tuloste + "</h3>";
       document.getElementById("Kyllikinportti2").innerHTML = "<div class='suunta'><h2>Keskustaan päin</h2></div>" + tuloste2 + "";
-      document.getElementById("radiokatu1").innerHTML = "<div class='suunta'><h2>Keskustaan päin</h2></div>" + tuloste3 + "";
+      document.getElementById("radiokatu1").innerHTML = "<div class='suunta'><h2>Ruskeasuon suuntaan</h2></div>" + tuloste3 + "";
       document.getElementById("radiokatu2").innerHTML = "<div class='suunta'><h2>Keskustaan päin</h2></div>" + tuloste4 + "";
 
       counter = 1;
