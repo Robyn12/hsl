@@ -7,8 +7,9 @@
 <script>
 var counter = 1;
 var url1 = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql";
-var header = "Content-Type: application/json";
-var query = { "query": "{  stops(ids: [\"HSL:1171407\", \"HSL:1171408\"])  { stoptimesWithoutPatterns (numberOfDepartures: 4) { trip { route { shortName }  } scheduledDeparture realtimeDeparture headsign } } }" };
+    var header = "Content-Type: application/json";
+    var stops = ["HSL:1171407", "HSL:1171408" ,"HSL:1171124", "HSL:1171125"]
+var query = { "query": "{  stops(ids: [\""+ stops[0] +"\", \"" + stops[1] + "\", \"" + stops[2] + "\", \"" + stops[3] + "\"])  { stoptimesWithoutPatterns (numberOfDepartures: 4) { trip { route { shortName }  } scheduledDeparture realtimeDeparture headsign } } }" };
 function checkInternetConnection() {
 	return navigator.onLine
 };
@@ -65,8 +66,14 @@ function haeTiedot() {
       success: function (data) {
       var tuloste = muotoileTiedot(data["data"]["stops"][0]["stoptimesWithoutPatterns"]);
       var tuloste2 = muotoileTiedot(data["data"]["stops"][1]["stoptimesWithoutPatterns"]);
+      var tuloste3 = muotoileTiedot(data["data"]["stops"][2]["stoptimesWithoutPatterns"]);
+      var tuloste4 = muotoileTiedot(data["data"]["stops"][3]["stoptimesWithoutPatterns"]);
+
       document.getElementById("Kyllikinportti1").innerHTML = "<div class='suunta'><h2>Pasilan Aseman suuntaan</h2></div>" + tuloste + "</h3>";
       document.getElementById("Kyllikinportti2").innerHTML = "<div class='suunta'><h2>Keskustaan päin</h2></div>" + tuloste2 + "";
+      document.getElementById("radiokatu1").innerHTML = "<div class='suunta'><h2>Keskustaan päin</h2></div>" + tuloste3 + "";
+      document.getElementById("radiokatu2").innerHTML = "<div class='suunta'><h2>Keskustaan päin</h2></div>" + tuloste4 + "";
+
       counter = 1;
     },
     error: function (data) {
@@ -103,14 +110,20 @@ setInterval(function(){
         </div>
     </div>
 
-	<div id="bussiAikataulu">
-        <div id="Kyllikinportti1">
+    <div id="bussiAikataulu">
+        <div class="aikatauluField" id="Kyllikinportti1">
             Kyllikinportti1
         </div>
-        <div id="Kyllikinportti2">
+        <div class="aikatauluField" id="Kyllikinportti2">
             Kyllikinportti2
         </div>
-	</div>
+        <div class="aikatauluField" id="radiokatu1">
+            Radiokatu1
+        </div>
+        <div class="aikatauluField" id="radiokatu2">
+            Radiokatu2
+        </div>
+    </div>
 </body>
 </html>
 
