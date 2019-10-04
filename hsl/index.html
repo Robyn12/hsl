@@ -19,10 +19,21 @@ function checkRefresh() {
 };
 function paivitaKello() {
     var now = new Date();
+    var weekday = new Array(7);
+    weekday[0] = "Su";
+    weekday[1] = "Ma";
+    weekday[2] = "Ti";
+    weekday[3] = "Ke";
+    weekday[4] = "To";
+    weekday[5] = "Pe";
+    weekday[6] = "La";
+
+    var n = weekday[now.getDay()];
     var kminuutit = now.getMinutes() < 1 ? "00" : now.getMinutes()<10 && now.getMinutes() > 0 ? "0" + now.getMinutes() : now.getMinutes();
     var ktunnit = now.getHours() < 1 ? "00" : now.getHours()<10 && now.getHours() > 0 ? "0" + now.getHours() : now.getHours();
     var ksekunnit = now.getSeconds() < 1 ? "00" : now.getSeconds()<10 && now.getSeconds() > 0 ? "0" + now.getSeconds() : now.getSeconds();
     document.getElementById('Kello').innerHTML = ktunnit + ":" + kminuutit + ":" + ksekunnit;
+    document.getElementById('pvm').innerHTML = n + " " + now.getDate() + "." + (now.getMonth() + 1) + "." + (now.getYear()+1900);
 };
 function muotoileTiedot(trips) {
     var now = new Date();
@@ -70,10 +81,10 @@ function haeTiedot() {
       var tuloste3 = muotoileTiedot(data["data"]["stops"][2]["stoptimesWithoutPatterns"]);
       var tuloste4 = muotoileTiedot(data["data"]["stops"][3]["stoptimesWithoutPatterns"]);
 
-      document.getElementById("Kyllikinportti1").innerHTML = "<div class='suunta'><h2>Pasilan Aseman suuntaan</h2></div>" + tuloste + "</h3>";
-      document.getElementById("Kyllikinportti2").innerHTML = "<div class='suunta'><h2>Keskustaan päin</h2></div>" + tuloste2 + "";
-      document.getElementById("radiokatu1").innerHTML = "<div class='suunta'><h2>Ruskeasuon suuntaan</h2></div>" + tuloste3 + "";
-      document.getElementById("radiokatu2").innerHTML = "<div class='suunta'><h2>Keskustaan päin</h2></div>" + tuloste4 + "";
+	      document.getElementById("Kyllikinportti1").innerHTML = "<div class='suunta'><h2>Kyllikinportin pysäkki<br/> Pasilan Aseman suuntaan</h2></div>" + tuloste + "</h3>";
+	      document.getElementById("Kyllikinportti2").innerHTML = "<div class='suunta'><h2>Kyllikinportin pysäkki<br />Keskustaan päin</h2></div>" + tuloste2 + "";
+	      document.getElementById("radiokatu1").innerHTML = "<div class='suunta'><h2>Radiokadun pysäkki<br/>Ruskeasuon suuntaan</h2></div>" + tuloste3 + "";
+	      document.getElementById("radiokatu2").innerHTML = "<div class='suunta'><h2>Radiokadun psyäkki<br/>Keskustaan päin</h2></div>" + tuloste4 + "";
 
       counter = 1;
     },
@@ -101,10 +112,10 @@ setInterval(function(){
     <div id="Otsikko">
         <div id="Headerit">
             <h1>
-                Bussiaikataulu
+                Julkinen Liikenne
             </h1>
 
-            <div><h3>Kyllikinportin pysäkit</h3></div>
+            <div><h3 id="pvm"></h3></div>
         </div>
         <div id="kelloDiv">
             <h2 id="Kello">kello</h2>
